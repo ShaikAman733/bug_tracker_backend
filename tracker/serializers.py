@@ -14,7 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'role', 'designation', 'is_active', 'password']
 
     def validate(self, data):
-        # Password mandatory sirf create pe, edit pe optional
+        # Password is mandatory only when creating a brand-new account;
+        # editing an existing one shouldn't force a password reset.
         if self.instance is None and not data.get('password'):
             raise serializers.ValidationError(
                 {'password': 'Password is required when creating a new account.'}

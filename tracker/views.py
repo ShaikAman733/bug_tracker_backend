@@ -1,20 +1,29 @@
-pythonfrom rest_framework.views import APIView
 from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import User, Project, Bug
 from .serializers import UserSerializer, ProjectSerializer, BugSerializer
-class MeView(APIView):
 
+
+class MeView(APIView):
+    """Returns the logged-in user's own profile.
+
+    DeveloperViewSet's queryset only contains role='DEVELOPER' users, so an
+    Administrator can never find themselves in /api/developers/. The
+    frontend needs a role-agnostic "who am I" endpoint to resolve this.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+
 class DeveloperViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(role='DEVELOPER')
     serializer_class = UserSerializer
